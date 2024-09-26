@@ -1,0 +1,9 @@
+argparse
+tkinter
+functools
+random
+time
+sys
+os
+time
+pyinstaller

@@ -1,7 +1,10 @@
 #9
+import time
+import sys 
+import os
+
 from tkinter import *
 from functools import partial
-import time
 from random import randint
 
 def remplissage_tableau(x,y,T):
@@ -132,23 +135,32 @@ def ValeurGet():
     longueur = sliderLongueur.get()
     hauteur = sliderHauteur.get()
 
+# from https://stackoverflow.com/questions/31836104/pyinstaller-and-onefile-how-to-include-an-image-in-the-exe-file
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 def creationImage():
     global imageBombe, imageDrapeau, imageDrapeauMS, imageCase, imageCreusee, imageMineCreusee, image1, image2, image3, image4, image5, image6, image7, image8
-    imageBombe = PhotoImage(file="images/case/mine.png")            #création des images des cases
-    imageDrapeau = PhotoImage(file="images/case/drapeau.png")
-    imageDrapeauMS = PhotoImage(file="images/case/drapeauMisplace.png")
-    imageCase = PhotoImage(file="images/case/case.png")
-    imageCreusee = PhotoImage(file="images/case/casecreuse.png")
-    imageMineCreusee = PhotoImage(file="images/case/minecreusee.png")
+    imageBombe = PhotoImage(file=resource_path("images/case/mine.png"))            #création des images des cases
+    imageDrapeau = PhotoImage(file=resource_path("images/case/drapeau.png"))
+    imageDrapeauMS = PhotoImage(file=resource_path("images/case/drapeauMisplace.png"))
+    imageCase = PhotoImage(file=resource_path("images/case/case.png"))
+    imageCreusee = PhotoImage(file=resource_path("images/case/casecreuse.png"))
+    imageMineCreusee = PhotoImage(file=resource_path("images/case/minecreusee.png"))
 
-    image1 = PhotoImage(file="images/chiffres/1.png")               #images pour les cases creusées
-    image2 = PhotoImage(file="images/chiffres/2.png")
-    image3 = PhotoImage(file="images/chiffres/3.png")
-    image4 = PhotoImage(file="images/chiffres/4.png")
-    image5 = PhotoImage(file="images/chiffres/5.png")
-    image6 = PhotoImage(file="images/chiffres/6.png")
-    image7 = PhotoImage(file="images/chiffres/7.png")
-    image8 = PhotoImage(file="images/chiffres/8.png")
+    image1 = PhotoImage(file=resource_path("images/chiffres/1.png"))               #images pour les cases creusées
+    image2 = PhotoImage(file=resource_path("images/chiffres/2.png"))
+    image3 = PhotoImage(file=resource_path("images/chiffres/3.png"))
+    image4 = PhotoImage(file=resource_path("images/chiffres/4.png"))
+    image5 = PhotoImage(file=resource_path("images/chiffres/5.png"))
+    image6 = PhotoImage(file=resource_path("images/chiffres/6.png"))
+    image7 = PhotoImage(file=resource_path("images/chiffres/7.png"))
+    image8 = PhotoImage(file=resource_path("images/chiffres/8.png"))
 
 def affichageGraphique():
     global listeImage, tailleCase
@@ -445,50 +457,64 @@ def recommencer():
     menuOption()
     fenetreFindeJeu.destroy()
 
-fenetre = Tk()
-fenetre.title("Démineur")
-fenetre.iconbitmap("images/demineur.ico")
-fenetre.resizable(0,0)
+def launchGame():
+    global fenetre, fenetreMenu, imageIcone, labelIconeMenu, boiteMenu, boiteButton
+    global buttonCommencer, buttonQuitter, sliderLongueur, sliderHauteur
+    global difficulte, buttonDiff1, buttonDiff2, buttonDiff3
+    global buttonCommencerOption, buttonQuitterOption, fenetreOptionJeu
+    global fenetreJeu, buttonQuitterJeu, labelTimer, labelScore, labelFindeJeu
+    global boiteDiffOption, boiteTroisiemeLigne, boiteConfig, fenetreOption
 
-fenetreMenu = Frame(fenetre)                        #fenètre pour le menu principal
+    fenetre = Tk()
+    fenetre.title("Démineur")
+    fenetre.iconbitmap("images/demineur.ico")
+    fenetre.resizable(0,0)
 
-imageIcone = PhotoImage(file="images/icone.png")      #création de l'image
-labelIconeMenu = Label(fenetreMenu, image=imageIcone)
-boiteMenu = Frame(fenetreMenu)
-buttonCommencer = Button(boiteMenu, text="Commencer le dénimeur", bg="#c0c0c0", command=menuOption)
-buttonQuitter = Button(boiteMenu, text="Quitter", bg="#c0c0c0", command=fenetre.destroy)
-
-
-fenetreOption = Frame(fenetre)                      #fenètre pour le menu pour configurer le démineur
-boiteConfig = LabelFrame(fenetreOption, text="Configuration du terrain")
-boiteTroisiemeLigne = Frame(boiteConfig)
-boiteDiffOption = LabelFrame(boiteTroisiemeLigne, padx=10, text="Difficulté")
-boiteButton = Frame(fenetreOption)
-
-sliderLongueur = Scale(boiteConfig, from_=5, to=50, length=250, tickinterval=5, troughcolor="#c0c0c0", orient=HORIZONTAL)
-sliderHauteur = Scale(boiteTroisiemeLigne, from_=5, to=30, tickinterval=5, troughcolor="#c0c0c0", length=100)
-
-difficulte = 2          #difficulte par défaut
-
-buttonDiff1 = Button(boiteDiffOption, text="Facile", bg="#c0c0c0", command=partial(SetDiff, 1))
-buttonDiff2 = Button(boiteDiffOption, text="Moyen", bg="#c0c0c0", command=partial(SetDiff, 2))
-buttonDiff3 = Button(boiteDiffOption, text="Difficile", bg="#c0c0c0", command=partial(SetDiff, 3))
-
-buttonCommencerOption = Button(boiteButton, text="Confirmer", bg="#c0c0c0", command=jeu)
-buttonQuitterOption = Button(boiteButton, text="Quitter", bg="#c0c0c0", command=fenetre.destroy)
+    # fenètre pour le menu principal
+    fenetreMenu = Frame(fenetre)                        
+    # création de l'image
+    imageIcone = PhotoImage(file="images/icone.png")      
+    labelIconeMenu = Label(fenetreMenu, image=imageIcone)
+    boiteMenu = Frame(fenetreMenu)
+    buttonCommencer = Button(boiteMenu, text="Commencer le dénimeur", bg="#c0c0c0", command=menuOption)
+    buttonQuitter = Button(boiteMenu, text="Quitter", bg="#c0c0c0", command=fenetre.destroy)
 
 
-fenetreOptionJeu = Frame(fenetre)
-fenetreJeu = Frame(fenetre)
-buttonQuitterJeu = Button(fenetreOptionJeu, text="Quitter", command=fenetre.destroy)
-labelTimer = Label(fenetreOptionJeu)
-labelScore = Label(fenetreOptionJeu)
+    # fenètre pour le menu pour configurer le démineur
+    fenetreOption = Frame(fenetre)                      
+    boiteConfig = LabelFrame(fenetreOption, text="Configuration du terrain")
+    boiteTroisiemeLigne = Frame(boiteConfig)
+    boiteDiffOption = LabelFrame(boiteTroisiemeLigne, padx=10, text="Difficulté")
+    boiteButton = Frame(fenetreOption)
+
+    sliderLongueur = Scale(boiteConfig, from_=5, to=50, length=250, tickinterval=5, troughcolor="#c0c0c0", orient=HORIZONTAL)
+    sliderHauteur = Scale(boiteTroisiemeLigne, from_=5, to=30, tickinterval=5, troughcolor="#c0c0c0", length=100)
+
+    # difficulte par défaut
+    difficulte = 2          
+
+    buttonDiff1 = Button(boiteDiffOption, text="Facile", bg="#c0c0c0", command=partial(SetDiff, 1))
+    buttonDiff2 = Button(boiteDiffOption, text="Moyen", bg="#c0c0c0", command=partial(SetDiff, 2))
+    buttonDiff3 = Button(boiteDiffOption, text="Difficile", bg="#c0c0c0", command=partial(SetDiff, 3))
+
+    buttonCommencerOption = Button(boiteButton, text="Confirmer", bg="#c0c0c0", command=jeu)
+    buttonQuitterOption = Button(boiteButton, text="Quitter", bg="#c0c0c0", command=fenetre.destroy)
 
 
-fenetreFindeJeu = Frame(fenetre)
-labelFindeJeu = Label(fenetreFindeJeu)
+    fenetreOptionJeu = Frame(fenetre)
+    fenetreJeu = Frame(fenetre)
+    buttonQuitterJeu = Button(fenetreOptionJeu, text="Quitter", command=fenetre.destroy)
+    labelTimer = Label(fenetreOptionJeu)
+    labelScore = Label(fenetreOptionJeu)
 
 
-menuPrincipal()
+    fenetreFindeJeu = Frame(fenetre)
+    labelFindeJeu = Label(fenetreFindeJeu)
 
-fenetre.mainloop()
+
+    menuPrincipal()
+
+    fenetre.mainloop()
+
+if __name__ == "__main__":
+    launchGame()

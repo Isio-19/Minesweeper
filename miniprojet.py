@@ -1,3 +1,7 @@
+import time
+
+from random import randint 
+
 def afficher(T):
     for y in range(len(T)):
         for x in range(len(T[0])):
@@ -9,9 +13,6 @@ def remplissage_tableau(x,y,T):
         T.append([])
         for _ in range(x):
             T[y].append(0)
-
-#1
-from random import randint 
 
 def Int_jeu(x,y,difficulte):
     if difficulte == 1: nombres_mines = int(x*y*0.125)
@@ -28,7 +29,6 @@ def Int_jeu(x,y,difficulte):
             mines_placees += 1
     return T,nombres_mines
 
-#2
 def mines_autour(T):
     matriceT = []
     remplissage_tableau(len(T[0]),len(T),matriceT)
@@ -54,7 +54,6 @@ def mines_autour(T):
             matriceT[y][x] = mines_proximite
     return matriceT
 
-#3 
 def affichage(T,matriceT):
     print(end="    ")
     for x in range(len(T[0])): 
@@ -73,7 +72,6 @@ def affichage(T,matriceT):
             elif T[y][x] == 2: print("?", end="  ")
         print("\n", end="")
     
-#4
 def poser_drapeau(T,x,y):
     if T[y][x] == 0:
         T[y][x] = 3
@@ -86,8 +84,6 @@ def lever_drapeau(T,x,y):
     elif T[y][x] == 4:
         T[y][x] = 2
 
-#5 
-
 def creuser(T,matriceT,x,y):
     global N                #j'ai mis cela parce que sinon, la variable N revient toujours à 0 bizarement
     if T[y][x] == 0:
@@ -96,7 +92,6 @@ def creuser(T,matriceT,x,y):
         return True
     elif T[y][x] == 2: return False
 
-#6
 def creuser_recu(T,matriceT,x,y):
     global N
     if matriceT[y][x] == 0 and T[y][x] == 0:
@@ -114,71 +109,71 @@ def creuser_recu(T,matriceT,x,y):
     else:    
         return creuser(T,matriceT,x,y,)
 
-#7 
-import time
-
 def score(N,TempsPris):
     points = (N*1000)-((TempsPris)*200)
     return points
 
-#8
-
-continuer = True
-while continuer == True:
-    x = int(input("Donner la longueur du terrain : "))
-    y = int(input("Donner la hauteur du terrain : "))
-    difficulte = int(input("Choisisser une difficulté entre 1 et 3 : "))
-    print("")
-    T, mines = Int_jeu(x,y,difficulte)
-    matriceT = mines_autour(T)
-    N = 0
-    affichage(T,matriceT)
-    debutTime = time.time()
-    x_case = int(input("Où voulez-vous initier la partie ? (X) "))
-    y_case = int(input("Où voulez-vous initier la partie ? (Y) "))
-    while matriceT[y_case][x_case] != 0:        #Ce while sert à toujours commencer la partie sur une partie de terrain découvert
+def launchGame():
+    global N
+    continuer = True
+    while continuer == True:
+        x = int(input("Donner la longueur du terrain : "))
+        y = int(input("Donner la hauteur du terrain : "))
+        difficulte = int(input("Choisisser une difficulté entre 1 et 3 : "))
+        print("")
         T, mines = Int_jeu(x,y,difficulte)
         matriceT = mines_autour(T)
-    creuser_recu(T,matriceT,x_case,y_case)
-    terminer = False
-    while terminer == False:
-        print("")
+        N = 0
         affichage(T,matriceT)
-        demandeAction = str(input("Voulez-vous creuser, poser / lever un drapeau ? (C,D) "))
-        x_case = int(input("Où voulez-vous faire cette action (X) ? "))
-        y_case = int(input("Où voulez-vous faire cette action (Y) ? "))
-        if (demandeAction == "C") or (demandeAction == "c"):
-            if T[y_case][x_case] == 1: 
-                print("")
-                print("Cette case a déjà été creusée")
-            elif T[y_case][x_case] == 3 or T[y_case][x_case] == 4: 
-                print("")
-                print("Cette case a un drapeau")
-            else:
-                case = creuser_recu(T,matriceT,x_case,y_case)
-                if case == False :
-                    finTime = time.time()
-                    TempsPris = int(finTime - debutTime)
-                    print("")
-                    print(f"Vous avez creusé une mine! Vous avez perdu avec un score de {score(N, TempsPris)}")
-                    terminer = True
-        elif demandeAction == "D" or demandeAction == "d":
-            if T[y_case][x_case] == 3 or T[y_case][x_case] == 4:
-                lever_drapeau(T,x_case,y_case)
-            elif T[y_case][x_case] == 0 or T[y_case][x_case] == 2:
-                poser_drapeau(T,x_case,y_case)
-            else: 
-                print("")
-                print("Cette case à déjà été creusée")
-        else: 
-            print("Commande incorrecte, veuillez réessayer")
-        if N == ((x*y)-mines):
-            finTime = time.time()
-            TempsPris = int(finTime - debutTime)
+        debutTime = time.time()
+        x_case = int(input("Où voulez-vous initier la partie ? (X) "))
+        y_case = int(input("Où voulez-vous initier la partie ? (Y) "))
+        while matriceT[y_case][x_case] != 0:        #Ce while sert à toujours commencer la partie sur une partie de terrain découvert
+            T, mines = Int_jeu(x,y,difficulte)
+            matriceT = mines_autour(T)
+        creuser_recu(T,matriceT,x_case,y_case)
+        terminer = False
+        while terminer == False:
             print("")
-            print(f"Vous avez réussi à deminer le terrain! Votre score est de {score(N, TempsPris)} points.")
-            terminer = True
-    demandeContinuer = str(input("Voulez-vous continuer ? (Y/N) "))
-    if (demandeContinuer == "N") or (demandeContinuer == "n"):
-        continuer = False
+            affichage(T,matriceT)
+            demandeAction = str(input("Voulez-vous creuser, poser / lever un drapeau ? (C,D) "))
+            x_case = int(input("Où voulez-vous faire cette action (X) ? "))
+            y_case = int(input("Où voulez-vous faire cette action (Y) ? "))
+            if (demandeAction == "C") or (demandeAction == "c"):
+                if T[y_case][x_case] == 1: 
+                    print("")
+                    print("Cette case a déjà été creusée")
+                elif T[y_case][x_case] == 3 or T[y_case][x_case] == 4: 
+                    print("")
+                    print("Cette case a un drapeau")
+                else:
+                    case = creuser_recu(T,matriceT,x_case,y_case)
+                    if case == False :
+                        finTime = time.time()
+                        TempsPris = int(finTime - debutTime)
+                        print("")
+                        print(f"Vous avez creusé une mine! Vous avez perdu avec un score de {score(N, TempsPris)}")
+                        terminer = True
+            elif demandeAction == "D" or demandeAction == "d":
+                if T[y_case][x_case] == 3 or T[y_case][x_case] == 4:
+                    lever_drapeau(T,x_case,y_case)
+                elif T[y_case][x_case] == 0 or T[y_case][x_case] == 2:
+                    poser_drapeau(T,x_case,y_case)
+                else: 
+                    print("")
+                    print("Cette case à déjà été creusée")
+            else: 
+                print("Commande incorrecte, veuillez réessayer")
+            if N == ((x*y)-mines):
+                finTime = time.time()
+                TempsPris = int(finTime - debutTime)
+                print("")
+                print(f"Vous avez réussi à deminer le terrain! Votre score est de {score(N, TempsPris)} points.")
+                terminer = True
+        demandeContinuer = str(input("Voulez-vous continuer ? (Y/N) "))
+        if (demandeContinuer == "N") or (demandeContinuer == "n"):
+            continuer = False
+    
 
+if __name__ == "__main__":
+    launchGame()
